@@ -21,8 +21,11 @@ import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 import org.openrewrite.jgit.transport.URIish;
 
+import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -316,8 +319,8 @@ public class GitRemote {
                 String path = uri.getPath().replaceFirst("/$", "")
                         .replaceFirst("(?i)\\.git$", "")
                         .replaceFirst("^/", "");
-                return URI.create((scheme + "://" + host + maybePort + "/" + path).replaceFirst("/$", ""));
-            } catch (URISyntaxException e) {
+                return URI.create((scheme + "://" + host + maybePort + "/" + URLEncoder.encode(path, StandardCharsets.UTF_8.toString())).replaceFirst("/$", ""));
+            } catch (URISyntaxException | UnsupportedEncodingException e) {
                 throw new IllegalStateException("Unable to parse origin from: " + url, e);
             }
         }
